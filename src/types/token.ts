@@ -8,8 +8,13 @@ export interface Coin {
   price_change_percentage_7d_in_currency: number;
   total_volume: number;
   current_price: number;
+  sparkline_in_7d: PriceCharts | [];
   market_cap: number;
 }
+
+type PriceCharts = {
+  price: number[];
+};
 
 export interface TableProps {
   coins: Coin[];

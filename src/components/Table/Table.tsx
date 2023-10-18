@@ -12,6 +12,7 @@ import {
 import React from "react";
 import { Coin, TableProps } from "../../types/token";
 import { formatCurrency } from "../../utils/format";
+import { SparklineChart } from "./Chart";
 
 export const TableSimple: React.FC<TableProps> = ({ coins }) => {
   return (
@@ -27,6 +28,7 @@ export const TableSimple: React.FC<TableProps> = ({ coins }) => {
             <TableCell>7d</TableCell>
             <TableCell>24h Volume</TableCell>
             <TableCell>Market Cap</TableCell>
+            <TableCell>Chart 7 days</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>
@@ -70,6 +72,20 @@ export const TableSimple: React.FC<TableProps> = ({ coins }) => {
               </TableCell>
               <TableCell>{formatCurrency(coin.total_volume)}</TableCell>
               <TableCell>{formatCurrency(coin.market_cap)}</TableCell>
+              <TableCell>
+                {Array.isArray(coin.sparkline_in_7d) ? (
+                  <div>Empty</div>
+                ) : (
+                  <SparklineChart
+                    data={coin.sparkline_in_7d.price}
+                    color={
+                      coin.price_change_percentage_7d_in_currency > 0
+                        ? "green"
+                        : "red"
+                    }
+                  />
+                )}
+              </TableCell>
               <TableCell>
                 <Button variant="outlined">Detail</Button>
               </TableCell>
