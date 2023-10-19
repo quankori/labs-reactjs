@@ -33,3 +33,16 @@ export const fetechSearchCoin = createAsyncThunk(
     return response.data.coins;
   }
 );
+
+export const fetechDetailCoin = createAsyncThunk(
+  "coins/fetchDetail",
+  async ({ tokenId }: { tokenId: string | undefined }) => {
+    if (tokenId) {
+      const response = await axios.get(
+        config.baseApiUrl +
+          `v3/coins/${tokenId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
+      );
+      return response.data;
+    }
+  }
+);

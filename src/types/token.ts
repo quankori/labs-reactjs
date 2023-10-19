@@ -26,9 +26,33 @@ export interface TableProps {
 export interface CoinListState {
   data: Coin[];
   trending: CoinInfo[];
+  coin: TokenDetail | null;
   loading: boolean;
   search: string;
   error: string | null;
   perPage: number;
+  id: string | null;
   page: number;
+}
+
+export interface MarketData {
+  current_price: Record<string, number>;
+  high_24h: Record<string, number>;
+  low_24h: Record<string, number>;
+  market_cap: Record<string, number>;
+  market_cap_rank: number;
+  total_volume: Record<string, number>;
+}
+
+export interface TokenDetail {
+  id: string;
+  symbol: string;
+  name: string;
+  description: { en: string };
+  image: {
+    thumb: string;
+    small: string;
+    large: string;
+  };
+  market_data: MarketData;
 }

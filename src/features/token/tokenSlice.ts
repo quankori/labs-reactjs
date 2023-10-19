@@ -1,12 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CoinListState } from "../../types/token";
 import { RejectedAction } from "../../types/redux";
-import { fetchCoins, fetchTrendCoins, fetechSearchCoin } from "./tokenAction";
+import {
+  fetchCoins,
+  fetchTrendCoins,
+  fetechDetailCoin,
+  fetechSearchCoin,
+} from "./tokenAction";
 
 const initialState: CoinListState = {
   data: [],
   trending: [],
+  coin: null,
   search: "",
+  id: null,
   loading: false,
   error: null,
   perPage: 10,
@@ -42,7 +49,7 @@ const handleTrendingFulfilled = (
   state.loading = false;
   const results = action.payload;
   state.trending = results.map((result) => {
-    return {...result.item, image: result.item.thumb}
+    return { ...result.item, image: result.item.thumb };
   });
 };
 
@@ -53,8 +60,16 @@ const handleSearchFulfilled = (
   state.loading = false;
   const results = action.payload;
   state.trending = results.map((result) => {
-    return {...result, image: result.thumb}
+    return { ...result, image: result.thumb };
   });
+};
+
+const handleDetailFulfilled = (
+  state: CoinListState,
+  action: PayloadAction<any>
+) => {
+  state.loading = false;
+  state.coin = action.payload;
 };
 
 const coinListSlice = createSlice({
@@ -81,7 +96,10 @@ const coinListSlice = createSlice({
       .addCase(fetchTrendCoins.rejected, handleRejected)
       .addCase(fetechSearchCoin.pending, handlePending)
       .addCase(fetechSearchCoin.fulfilled, handleSearchFulfilled)
-      .addCase(fetechSearchCoin.rejected, handleRejected);
+      .addCase(fetechSearchCoin.rejected, handleRejected)
+      .addCase(fetechDetailCoin.pending, handlePending)
+      .addCase(fetechDetailCoin.fulfilled, handleDetailFulfilled)
+      .addCase(fetechDetailCoin.rejected, handleRejected);
   },
 });
 
