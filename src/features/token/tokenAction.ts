@@ -33,3 +33,35 @@ export const fetechSearchCoin = createAsyncThunk(
     return response.data.coins;
   }
 );
+
+export const fetechDetailCoin = createAsyncThunk(
+  "coins/fetchDetail",
+  async ({ tokenId }: { tokenId: string | undefined }) => {
+    if (tokenId) {
+      const response = await axios.get(
+        config.baseApiUrl +
+          `v3/coins/${tokenId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
+      );
+      return response.data;
+    }
+  }
+);
+
+export const fetchOHLCCoin = createAsyncThunk(
+  "coins/fetchOHLCCoin",
+  async ({
+    tokenId,
+    days = 1,
+  }: {
+    tokenId: string | undefined;
+    days: number;
+  }) => {
+    if (tokenId) {
+      const response = await axios.get(
+        config.baseApiUrl +
+          `v3/coins/${tokenId}/ohlc?vs_currency=usd&days=${days}`
+      );
+      return response.data;
+    }
+  }
+);
