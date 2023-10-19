@@ -1,27 +1,60 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import config from "../../config/settings";
-import { RootState } from "../../stores/stores";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CoinListState } from "../../types/token";
-
-export const fetchCoins = createAsyncThunk(
-  "coins/fetchCoins",
-  async (_, { getState }) => {
-    const { perPage, page } = (getState() as RootState).tokens;
-    const response = await axios.get(
-      config.baseApiUrl +
-        `v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d&locale=en`
-    );
-    return response.data;
-  }
-);
+import { RejectedAction } from "../../types/redux";
+import { fetchCoins, fetchTrendCoins, fetechSearchCoin } from "./tokenAction";
 
 const initialState: CoinListState = {
   data: [],
+  trending: [],
+  search: "",
   loading: false,
   error: null,
   perPage: 10,
   page: 1,
+};
+
+const handlePending = (state: CoinListState) => {
+  state.loading = true;
+  state.error = null;
+};
+
+const handleRejected = (state: CoinListState, action: RejectedAction) => {
+  state.loading = false;
+  if (action.error) {
+    state.error = action.error.message || "Error fetching data.";
+  } else if (action.payload) {
+    state.error = action.payload as string;
+  }
+};
+
+const handleCoinsFulfilled = (
+  state: CoinListState,
+  action: PayloadAction<any[]>
+) => {
+  state.loading = false;
+  state.data = action.payload;
+};
+
+const handleTrendingFulfilled = (
+  state: CoinListState,
+  action: PayloadAction<any[]>
+) => {
+  state.loading = false;
+  const results = action.payload;
+  state.trending = results.map((result) => {
+    return {...result.item, image: result.item.thumb}
+  });
+};
+
+const handleSearchFulfilled = (
+  state: CoinListState,
+  action: PayloadAction<any[]>
+) => {
+  state.loading = false;
+  const results = action.payload;
+  state.trending = results.map((result) => {
+    return {...result, image: result.thumb}
+  });
 };
 
 const coinListSlice = createSlice({
@@ -34,23 +67,23 @@ const coinListSlice = createSlice({
     setPage: (state, action) => {
       state.page = action.payload;
     },
+    setSearch: (state, action) => {
+      state.search = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCoins.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchCoins.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
-      .addCase(fetchCoins.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "Error fetching data.";
-      });
+      .addCase(fetchCoins.pending, handlePending)
+      .addCase(fetchCoins.fulfilled, handleCoinsFulfilled)
+      .addCase(fetchCoins.rejected, handleRejected)
+      .addCase(fetchTrendCoins.pending, handlePending)
+      .addCase(fetchTrendCoins.fulfilled, handleTrendingFulfilled)
+      .addCase(fetchTrendCoins.rejected, handleRejected)
+      .addCase(fetechSearchCoin.pending, handlePending)
+      .addCase(fetechSearchCoin.fulfilled, handleSearchFulfilled)
+      .addCase(fetechSearchCoin.rejected, handleRejected);
   },
 });
 
-export const { setPerPage, setPage } = coinListSlice.actions;
+export const { setPerPage, setPage, setSearch } = coinListSlice.actions;
 export default coinListSlice.reducer;

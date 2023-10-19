@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../stores/stores";
-import { fetchCoins, setPage } from "../../features/token/tokenSlice";
+import { setPage } from "../../features/token/tokenSlice";
 import { TableSimple } from "../../components";
 import { Pagination } from "@mui/material";
+import { fetchCoins } from "../../features/token/tokenAction";
 
 export const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
