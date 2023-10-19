@@ -13,7 +13,7 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchCoins());
-  }, [dispatch, perPage, page]);
+  }, [perPage, page]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
