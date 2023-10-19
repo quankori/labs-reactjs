@@ -13,8 +13,10 @@ import React from "react";
 import { Coin, TableProps } from "../../types/token";
 import { formatCurrency } from "../../utils/format";
 import { SparklineChart } from "./Chart";
+import { useNavigate } from "react-router-dom";
 
 export const TableSimple: React.FC<TableProps> = ({ coins }) => {
+  const navigate = useNavigate();
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -33,8 +35,8 @@ export const TableSimple: React.FC<TableProps> = ({ coins }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {coins.map((coin: Coin, index: number) => (
-            <TableRow key={index}>
+          {coins.map((coin: Coin) => (
+            <TableRow key={coin.id}>
               <TableCell>
                 <Avatar alt={coin.name} src={coin.image} /> {coin.name}
               </TableCell>
@@ -87,7 +89,12 @@ export const TableSimple: React.FC<TableProps> = ({ coins }) => {
                 )}
               </TableCell>
               <TableCell>
-                <Button variant="outlined">Detail</Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate(coin.id)}
+                >
+                  Detail
+                </Button>
               </TableCell>
             </TableRow>
           ))}

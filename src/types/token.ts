@@ -1,8 +1,11 @@
-export interface Coin {
+export interface CoinInfo {
   id: string;
   name: string;
   symbol: string;
   image: string;
+}
+
+export interface Coin extends CoinInfo {
   price_change_percentage_1h_in_currency: number;
   price_change_percentage_24h_in_currency: number;
   price_change_percentage_7d_in_currency: number;
@@ -22,7 +25,9 @@ export interface TableProps {
 
 export interface CoinListState {
   data: Coin[];
+  trending: CoinInfo[];
   loading: boolean;
+  search: string;
   error: string | null;
   perPage: number;
   page: number;
