@@ -3,6 +3,7 @@ import { CoinListState } from "../../types/token";
 import { RejectedAction } from "../../types/redux";
 import {
   fetchCoins,
+  fetchOHLCCoin,
   fetchTrendCoins,
   fetechDetailCoin,
   fetechSearchCoin,
@@ -11,6 +12,7 @@ import {
 const initialState: CoinListState = {
   data: [],
   trending: [],
+  ohlc: [],
   coin: null,
   search: "",
   id: null,
@@ -72,6 +74,20 @@ const handleDetailFulfilled = (
   state.coin = action.payload;
 };
 
+const handleOHLCFulfilled = (
+  state: CoinListState,
+  action: PayloadAction<any[]>
+) => {
+  state.loading = false;
+  state.ohlc = action.payload.map((entry) => ({
+    timestamp: entry[0],
+    open: entry[1],
+    high: entry[2],
+    low: entry[3],
+    close: entry[4],
+  }));
+};
+
 const coinListSlice = createSlice({
   name: "coins",
   initialState,
@@ -99,7 +115,10 @@ const coinListSlice = createSlice({
       .addCase(fetechSearchCoin.rejected, handleRejected)
       .addCase(fetechDetailCoin.pending, handlePending)
       .addCase(fetechDetailCoin.fulfilled, handleDetailFulfilled)
-      .addCase(fetechDetailCoin.rejected, handleRejected);
+      .addCase(fetechDetailCoin.rejected, handleRejected)
+      .addCase(fetchOHLCCoin.pending, handlePending)
+      .addCase(fetchOHLCCoin.fulfilled, handleOHLCFulfilled)
+      .addCase(fetchOHLCCoin.rejected, handleRejected);
   },
 });
 

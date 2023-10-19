@@ -46,3 +46,22 @@ export const fetechDetailCoin = createAsyncThunk(
     }
   }
 );
+
+export const fetchOHLCCoin = createAsyncThunk(
+  "coins/fetchOHLCCoin",
+  async ({
+    tokenId,
+    days = 1,
+  }: {
+    tokenId: string | undefined;
+    days: number;
+  }) => {
+    if (tokenId) {
+      const response = await axios.get(
+        config.baseApiUrl +
+          `v3/coins/${tokenId}/ohlc?vs_currency=usd&days=${days}`
+      );
+      return response.data;
+    }
+  }
+);

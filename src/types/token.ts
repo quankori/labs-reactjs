@@ -25,6 +25,7 @@ export interface TableProps {
 
 export interface CoinListState {
   data: Coin[];
+  ohlc: OHLCData[];
   trending: CoinInfo[];
   coin: TokenDetail | null;
   loading: boolean;
@@ -55,4 +56,12 @@ export interface TokenDetail {
     large: string;
   };
   market_data: MarketData;
+}
+
+export interface OHLCData {
+  timestamp: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
 }
