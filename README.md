@@ -1,27 +1,16 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Tasks
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- [x] Setup project structure and install package requirement
+- [x] Create basic template parent such as header and footer
+- [x] Create basic template table and detail
+- [ ] Setup react router
+- [ ] Integreate API Coingecko
+- [ ] Search coin name with API Coingecko and the search box should show trending coins to suggest users at first when the box has the focus
+- [ ] Setup coin price chart in a specific time range and set default it and limit options
+- [ ] Setup server and redis for cache data
+- [ ] Create coin price statistic as well (ohlc) with cache redis
+- [ ] Deploy source to S3
+- [ ] Config cloudfront for cache website
+- [ ] Write unit test about return the maximum profit you can achieve with the list of prices `stockPriceList=[2,3,6,4,3]`
