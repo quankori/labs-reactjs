@@ -12,9 +12,18 @@ import {
 
 interface SparklineChartProps {
   data: number[];
-  color: string
+  color: string;
 }
-export const SparklineChart: React.FC<SparklineChartProps> = ({ data, color }) => {
+
+/**
+ * Spark line chart for dashboard
+ * @param param0
+ * @returns
+ */
+export const SparklineChart: React.FC<SparklineChartProps> = ({
+  data,
+  color,
+}) => {
   Chart.register(
     LineController,
     LineElement,
@@ -32,7 +41,7 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({ data, color }) =
         backgroundColor: color,
         borderColor: color,
         pointRadius: 0,
-        borderWidth: 1
+        borderWidth: 1,
       },
     ],
   };
