@@ -3,15 +3,17 @@ import { createChart, IChartApi } from "lightweight-charts";
 import { OHLCData } from "../../types/token";
 import { formatDate } from "../../utils/format";
 interface Props {
-  width: number;
-  height: number;
   data: OHLCData[];
 }
 
-export const OHLCChart: React.FC<Props> = ({ width, height, data }) => {
-  const chartContainerRef = useRef(null);
+/**
+ * OHLC Chart for detail page
+ * @param param0
+ * @returns
+ */
+export const OHLCChart: React.FC<Props> = ({ data }) => {
+  const chartContainerRef = useRef<HTMLDivElement | null>(null);
   let chart: IChartApi | null = null;
-
   const processData = (rawData: OHLCData[]): OHLCData[] => {
     let processedData: OHLCData[] = [];
     let currentDate: string | null = null;
@@ -50,8 +52,8 @@ export const OHLCChart: React.FC<Props> = ({ width, height, data }) => {
   useEffect(() => {
     if (chartContainerRef.current) {
       chart = createChart(chartContainerRef.current, {
-        width,
-        height,
+        width: chartContainerRef.current?.clientWidth,
+        height: chartContainerRef.current?.clientHeight || 500,
         timeScale: {
           timeVisible: true,
           secondsVisible: false,
@@ -72,13 +74,12 @@ export const OHLCChart: React.FC<Props> = ({ width, height, data }) => {
       );
     }
 
-    // Cleanup on unmount
     return () => {
       if (chart) {
         chart.remove();
       }
     };
-  }, [data, width, height]);
+  }, [data]);
 
   return <div ref={chartContainerRef}></div>;
 };

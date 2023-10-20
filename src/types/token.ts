@@ -15,14 +15,6 @@ export interface Coin extends CoinInfo {
   market_cap: number;
 }
 
-type PriceCharts = {
-  price: number[];
-};
-
-export interface TableProps {
-  coins: Coin[];
-}
-
 export interface CoinListState {
   data: Coin[];
   price: PriceData[];
@@ -71,3 +63,7 @@ export interface PriceData {
   timestamp: number;
   value: number;
 }
+
+type PriceCharts = {
+  price: number[];
+};

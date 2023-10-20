@@ -1,27 +1,27 @@
 import { Avatar, Grid, Paper, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import DateFnsUtils from "@date-io/date-fns";
 import { useParams } from "react-router-dom";
-import { Stats } from "../../components/Stats/Stats";
-import { OHLCChart } from "../../components/OHLCChart/OHLCChart";
-import { AppDispatch, RootState } from "../../stores/stores";
+import { Stats } from "../components/Stats/Stats";
+import { OHLCChart } from "../components/Chart/OHLCChart";
+import { AppDispatch, RootState } from "../stores/stores";
 import {
   fetchOHLCCoin,
   fetechDetailCoin,
   fetchPriceCoin,
-} from "../../features/token/tokenAction";
-import { ReadMoreText } from "../../components/ReadMoreText/ReadMoreText";
-import { ChartType } from "../../types/enum";
-import { formatDate } from "../../utils/format";
+} from "../features/token/tokenAction";
+import { ReadMoreText } from "../components/ReadMoreText/ReadMoreText";
+import { ChartTypeEnums, DaysEnums } from "../types/enum";
+import { formatDate } from "../utils/format";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { isAfter, addMonths, isBefore } from "date-fns";
+import { isAfter, isBefore } from "date-fns";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
-import DateFnsUtils from "@date-io/date-fns";
-import { PriceChart } from "../../components/OHLCChart/PriceChart";
+import { LineChart } from "../components/Chart/LineChart";
 
 export const Detail: React.FC = () => {
-  const [currentChart, setCurrentChart] = useState<ChartType>(
-    ChartType.OHLC_CHART
+  const [currentChart, setCurrentChart] = useState<ChartTypeEnums>(
+    ChartTypeEnums.OHLC_CHART
   );
 
   const today = new Date();
@@ -69,51 +69,37 @@ export const Detail: React.FC = () => {
 
   const renderChart = () => {
     switch (currentChart) {
-      case ChartType.OHLC_CHART:
+      case ChartTypeEnums.OHLC_CHART:
         return (
           <Grid container spacing={2} alignItems="center">
-            <Grid>
-              <OHLCChart width={600} height={400} data={ohlc} />
+            <Grid item xs={12}>
+              {[
+                DaysEnums.A_WEEK,
+                DaysEnums.TWO_WEEK,
+                DaysEnums.THIRTY_DAYS,
+                DaysEnums.A_YEAR,
+              ].map((day: DaysEnums, index: number) => {
+                return (
+                  <Button
+                    key={index}
+                    variant="outlined"
+                    style={{ margin: 10 }}
+                    onClick={() => setDaysOHLCChart(day)}
+                  >
+                    {day} days
+                  </Button>
+                );
+              })}
             </Grid>
-            <Grid>
-              <Button
-                variant="outlined"
-                style={{ margin: 10 }}
-                onClick={() => setDaysOHLCChart(7)}
-              >
-                7 days
-              </Button>
-              <Button
-                variant="outlined"
-                style={{ margin: 10 }}
-                onClick={() => setDaysOHLCChart(14)}
-              >
-                14 days
-              </Button>
-              <Button
-                variant="outlined"
-                style={{ margin: 10 }}
-                onClick={() => setDaysOHLCChart(30)}
-              >
-                30 days
-              </Button>
-              <Button
-                variant="outlined"
-                style={{ margin: 10 }}
-                onClick={() => setDaysOHLCChart(365)}
-              >
-                1 year
-              </Button>
+            <Grid item xs={12}>
+              <OHLCChart data={ohlc} />
             </Grid>
           </Grid>
         );
-      case ChartType.PRICE_CHART:
+      case ChartTypeEnums.PRICE_CHART:
         return (
           <Grid container spacing={2} alignItems="center">
-            <Grid>
-              <PriceChart width={600} height={400} data={price} />
-            </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={2}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <DatePicker
                   margin="normal"
@@ -130,7 +116,7 @@ export const Detail: React.FC = () => {
                 />
               </MuiPickersUtilsProvider>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={2}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <DatePicker
                   margin="normal"
@@ -147,6 +133,9 @@ export const Detail: React.FC = () => {
                 />
               </MuiPickersUtilsProvider>
             </Grid>
+            <Grid item xs={12}>
+              <LineChart data={price} />
+            </Grid>
           </Grid>
         );
       default:
@@ -156,7 +145,7 @@ export const Detail: React.FC = () => {
 
   if (coin) {
     return (
-      <div style={{ padding: 20 }}>
+      <>
         <Paper elevation={3} style={{ padding: 20 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12}>
@@ -168,27 +157,27 @@ export const Detail: React.FC = () => {
           </Grid>
         </Paper>
         <Paper elevation={3} style={{ padding: 20, margin: 10 }}>
+          {renderChart()}
           <Grid container spacing={2} alignItems="center">
             <Grid margin={2} item xs={12}>
               <Button
                 variant="outlined"
                 style={{ margin: 2 }}
-                onClick={() => setCurrentChart(ChartType.OHLC_CHART)}
+                onClick={() => setCurrentChart(ChartTypeEnums.OHLC_CHART)}
               >
                 OHLC Chart
               </Button>
               <Button
                 variant="outlined"
                 style={{ margin: 2 }}
-                onClick={() => setCurrentChart(ChartType.PRICE_CHART)}
+                onClick={() => setCurrentChart(ChartTypeEnums.PRICE_CHART)}
               >
                 Price Chart
               </Button>
             </Grid>
           </Grid>
-          {renderChart()}
         </Paper>
-      </div>
+      </>
     );
   }
 };

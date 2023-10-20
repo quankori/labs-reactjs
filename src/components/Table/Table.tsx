@@ -10,10 +10,14 @@ import {
   Avatar,
 } from "@mui/material";
 import React from "react";
-import { Coin, TableProps } from "../../types/token";
+import { Coin } from "../../types/token";
 import { formatCurrency } from "../../utils/format";
-import { SparklineChart } from "./Chart";
+import { SparklineChart } from "../Chart/SparklineChart";
 import { useNavigate } from "react-router-dom";
+
+export interface TableProps {
+  coins: Coin[];
+}
 
 export const TableSimple: React.FC<TableProps> = ({ coins }) => {
   const navigate = useNavigate();
@@ -89,10 +93,7 @@ export const TableSimple: React.FC<TableProps> = ({ coins }) => {
                 )}
               </TableCell>
               <TableCell>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate(coin.id)}
-                >
+                <Button variant="outlined" onClick={() => navigate(coin.id)}>
                   Detail
                 </Button>
               </TableCell>
