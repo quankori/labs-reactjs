@@ -80,7 +80,12 @@ export const Header: React.FC = () => {
                   key={option.id}
                 >
                   <li {...props}>
-                    <Avatar alt={option.name} src={option.image} />
+                    <Avatar
+                      alt={option.name}
+                      src={option.image}
+                      style={{ width: "30px", height: "30px" }}
+                    />
+                    {""}
                     {option.name}
                   </li>
                 </a>
