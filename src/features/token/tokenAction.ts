@@ -65,3 +65,24 @@ export const fetchOHLCCoin = createAsyncThunk(
     }
   }
 );
+
+export const fetchPriceCoin = createAsyncThunk(
+  "coins/fetchPriceCoin",
+  async ({
+    tokenId,
+    fromDate,
+    toDate
+  }: {
+    tokenId: string | undefined;
+    fromDate: number;
+    toDate: number
+  }) => {
+    if (tokenId) {
+      const response = await axios.get(
+        config.baseApiUrl +
+          `v3/coins/${tokenId}/market_chart/range?vs_currency=usd&from=${Math.floor(fromDate / 1000)}&to=${Math.floor(toDate / 1000)}`
+      );
+      return response.data.prices;
+    }
+  }
+);

@@ -1,5 +1,5 @@
 import { Avatar, Grid, Paper, Button, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Stats } from "../../components/Stats/Stats";
@@ -8,18 +8,151 @@ import { AppDispatch, RootState } from "../../stores/stores";
 import {
   fetchOHLCCoin,
   fetechDetailCoin,
+  fetchPriceCoin,
 } from "../../features/token/tokenAction";
 import { ReadMoreText } from "../../components/ReadMoreText/ReadMoreText";
+import { ChartType } from "../../types/enum";
+import { formatDate } from "../../utils/format";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { isAfter, addMonths, isBefore } from "date-fns";
+import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
+import DateFnsUtils from "@date-io/date-fns";
+import { PriceChart } from "../../components/OHLCChart/PriceChart";
+
 export const Detail: React.FC = () => {
+  const [currentChart, setCurrentChart] = useState<ChartType>(
+    ChartType.OHLC_CHART
+  );
+
+  const today = new Date();
+  const lastMonth = new Date(today);
+  lastMonth.setMonth(today.getMonth() - 1);
+
+  const [daysOHLCChart, setDaysOHLCChart] = useState<number>(365);
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const coin = useSelector((state: RootState) => state.tokens.coin);
   const ohlc = useSelector((state: RootState) => state.tokens.ohlc);
+  const price = useSelector((state: RootState) => state.tokens.price);
+  const [fromDate, setFromDate] = useState(lastMonth.getTime());
+  const [toDate, setToDate] = useState(today.getTime());
 
   useEffect(() => {
     dispatch(fetechDetailCoin({ tokenId: id }));
-    dispatch(fetchOHLCCoin({ tokenId: id, days: 365 }));
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
+  }, [daysOHLCChart]);
+
+  useEffect(() => {
+    dispatch(fetchPriceCoin({ tokenId: id, fromDate, toDate }));
+  }, [fromDate, toDate]);
+
+  const handleFromShouldDisableDate = (date: MaterialUiPickersDate) => {
+    if (!date) return false;
+    if (toDate) {
+      const [year, month, day] = formatDate(toDate).split("-").map(Number);
+      return isAfter(date, new Date(year, month - 1, day));
+    }
+    return false;
+  };
+
+  const handleToShouldDisableDate = (date: MaterialUiPickersDate) => {
+    if (!date) return false;
+    if (fromDate) {
+      const [year, month, day] = formatDate(fromDate).split("-").map(Number);
+      return isBefore(date, new Date(year, month - 1, day));
+    }
+    return false;
+  };
+
+  const renderChart = () => {
+    switch (currentChart) {
+      case ChartType.OHLC_CHART:
+        return (
+          <Grid container spacing={2} alignItems="center">
+            <Grid>
+              <OHLCChart width={600} height={400} data={ohlc} />
+            </Grid>
+            <Grid>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(7)}
+              >
+                7 days
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(14)}
+              >
+                14 days
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(30)}
+              >
+                30 days
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(365)}
+              >
+                1 year
+              </Button>
+            </Grid>
+          </Grid>
+        );
+      case ChartType.PRICE_CHART:
+        return (
+          <Grid container spacing={2} alignItems="center">
+            <Grid>
+              <PriceChart width={600} height={400} data={price} />
+            </Grid>
+            <Grid item xs={6}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <DatePicker
+                  margin="normal"
+                  id="from-date-picker"
+                  label="From"
+                  format="yyyy/MM/dd"
+                  value={fromDate}
+                  minDate={lastMonth}
+                  maxDate={today}
+                  shouldDisableDate={handleFromShouldDisableDate}
+                  onChange={(newValue) => {
+                    if (newValue) setFromDate(newValue.getTime());
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Grid>
+            <Grid item xs={6}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <DatePicker
+                  margin="normal"
+                  id="to-date-picker"
+                  label="To"
+                  format="yyyy/MM/dd"
+                  value={toDate}
+                  minDate={lastMonth}
+                  maxDate={today}
+                  shouldDisableDate={handleToShouldDisableDate}
+                  onChange={(newValue) => {
+                    if (newValue) setToDate(newValue.getTime());
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Grid>
+          </Grid>
+        );
+      default:
+        break;
+    }
+  };
 
   if (coin) {
     return (
@@ -34,27 +167,26 @@ export const Detail: React.FC = () => {
             </Grid>
           </Grid>
         </Paper>
-
         <Paper elevation={3} style={{ padding: 20, margin: 10 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                24 hours
+            <Grid margin={2} item xs={12}>
+              <Button
+                variant="outlined"
+                style={{ margin: 2 }}
+                onClick={() => setCurrentChart(ChartType.OHLC_CHART)}
+              >
+                OHLC Chart
               </Button>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                7 days
+              <Button
+                variant="outlined"
+                style={{ margin: 2 }}
+                onClick={() => setCurrentChart(ChartType.PRICE_CHART)}
+              >
+                Price Chart
               </Button>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                14 days
-              </Button>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                30 days
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <OHLCChart width={1000} height={400} data={ohlc} />
             </Grid>
           </Grid>
+          {renderChart()}
         </Paper>
       </div>
     );

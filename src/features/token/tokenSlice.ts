@@ -4,6 +4,7 @@ import { RejectedAction } from "../../types/redux";
 import {
   fetchCoins,
   fetchOHLCCoin,
+  fetchPriceCoin,
   fetchTrendCoins,
   fetechDetailCoin,
   fetechSearchCoin,
@@ -12,6 +13,7 @@ import {
 const initialState: CoinListState = {
   data: [],
   trending: [],
+  price: [],
   ohlc: [],
   coin: null,
   search: "",
@@ -88,6 +90,17 @@ const handleOHLCFulfilled = (
   }));
 };
 
+const handlePriceFulfilled = (
+  state: CoinListState,
+  action: PayloadAction<any[]>
+) => {
+  state.loading = false;
+  state.price = action.payload.map((entry) => ({
+    timestamp: entry[0],
+    value: entry[1],
+  }));
+};
+
 const coinListSlice = createSlice({
   name: "coins",
   initialState,
@@ -118,7 +131,10 @@ const coinListSlice = createSlice({
       .addCase(fetechDetailCoin.rejected, handleRejected)
       .addCase(fetchOHLCCoin.pending, handlePending)
       .addCase(fetchOHLCCoin.fulfilled, handleOHLCFulfilled)
-      .addCase(fetchOHLCCoin.rejected, handleRejected);
+      .addCase(fetchOHLCCoin.rejected, handleRejected)
+      .addCase(fetchPriceCoin.pending, handlePending)
+      .addCase(fetchPriceCoin.fulfilled, handlePriceFulfilled)
+      .addCase(fetchPriceCoin.rejected, handleRejected);
   },
 });
 

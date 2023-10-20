@@ -55,8 +55,6 @@ export const Header: React.FC = () => {
           <a href="/" style={{ color: "inherit" }}>
             <Button color="inherit">Home </Button>
           </a>
-          <Button color="inherit">Trade</Button>
-          <Button color="inherit">Connect Wallet</Button>
         </div>
         <div>
           {Array.isArray(trendingCoins) && (
