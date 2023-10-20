@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../stores/stores";
 import {
   fetchOHLCCoin,
   fetechDetailCoin,
+  fetchPriceCoin,
 } from "../../features/token/tokenAction";
 import { ReadMoreText } from "../../components/ReadMoreText/ReadMoreText";
 import { ChartType } from "../../types/enum";
@@ -16,6 +17,7 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { isAfter, addMonths, isBefore } from "date-fns";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import DateFnsUtils from "@date-io/date-fns";
+import { PriceChart } from "../../components/OHLCChart/PriceChart";
 
 export const Detail: React.FC = () => {
   const [currentChart, setCurrentChart] = useState<ChartType>(
@@ -31,8 +33,9 @@ export const Detail: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const coin = useSelector((state: RootState) => state.tokens.coin);
   const ohlc = useSelector((state: RootState) => state.tokens.ohlc);
-  const [fromDate, setFromDate] = useState(formatDate(lastMonth.getTime()));
-  const [toDate, setToDate] = useState(formatDate(today.getTime()));
+  const price = useSelector((state: RootState) => state.tokens.price);
+  const [fromDate, setFromDate] = useState(lastMonth.getTime());
+  const [toDate, setToDate] = useState(today.getTime());
 
   useEffect(() => {
     dispatch(fetechDetailCoin({ tokenId: id }));
@@ -42,18 +45,14 @@ export const Detail: React.FC = () => {
     dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
   }, [daysOHLCChart]);
 
-  // useEffect(() => {
-  //   if (!validateDates()) {
-  //     console.log("ss");
-  //     return;
-  //   }
-  //   console.log("ok");
-  // }, [fromDate, toDate]);
+  useEffect(() => {
+    dispatch(fetchPriceCoin({ tokenId: id, fromDate, toDate }));
+  }, [fromDate, toDate]);
 
   const handleFromShouldDisableDate = (date: MaterialUiPickersDate) => {
     if (!date) return false;
     if (toDate) {
-      const [year, month, day] = toDate.split("-").map(Number);
+      const [year, month, day] = formatDate(toDate).split("-").map(Number);
       return isAfter(date, new Date(year, month - 1, day));
     }
     return false;
@@ -62,7 +61,7 @@ export const Detail: React.FC = () => {
   const handleToShouldDisableDate = (date: MaterialUiPickersDate) => {
     if (!date) return false;
     if (fromDate) {
-      const [year, month, day] = fromDate.split("-").map(Number);
+      const [year, month, day] = formatDate(fromDate).split("-").map(Number);
       return isBefore(date, new Date(year, month - 1, day));
     }
     return false;
@@ -112,7 +111,7 @@ export const Detail: React.FC = () => {
         return (
           <Grid container spacing={2} alignItems="center">
             <Grid>
-              <OHLCChart width={600} height={400} data={ohlc} />
+              <PriceChart width={600} height={400} data={price} />
             </Grid>
             <Grid item xs={6}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -126,7 +125,7 @@ export const Detail: React.FC = () => {
                   maxDate={today}
                   shouldDisableDate={handleFromShouldDisableDate}
                   onChange={(newValue) => {
-                    if (newValue) setFromDate(formatDate(newValue.getTime()));
+                    if (newValue) setFromDate(newValue.getTime());
                   }}
                 />
               </MuiPickersUtilsProvider>
@@ -143,7 +142,7 @@ export const Detail: React.FC = () => {
                   maxDate={today}
                   shouldDisableDate={handleToShouldDisableDate}
                   onChange={(newValue) => {
-                    if (newValue) setToDate(formatDate(newValue.getTime()));
+                    if (newValue) setToDate(newValue.getTime());
                   }}
                 />
               </MuiPickersUtilsProvider>

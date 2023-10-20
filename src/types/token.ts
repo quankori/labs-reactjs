@@ -25,6 +25,7 @@ export interface TableProps {
 
 export interface CoinListState {
   data: Coin[];
+  price: PriceData[];
   ohlc: OHLCData[];
   trending: CoinInfo[];
   coin: TokenDetail | null;
@@ -64,4 +65,9 @@ export interface OHLCData {
   high: number;
   low: number;
   close: number;
+}
+
+export interface PriceData {
+  timestamp: number;
+  value: number;
 }
