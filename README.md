@@ -11,3 +11,5 @@ Tasks
 - [x] Setup coin price chart in a specific time range and set default it and limit options
 - [x] Create coin price statistic as well (ohlc)
 - [x] Write unit test about return the maximum profit you can achieve with the list of prices `stockPriceList=[2,3,6,4,3]`
+- [ ] Refactor code and components
+- [ ] Refactor UI/UX in webiste
