@@ -1,5 +1,5 @@
 import { Avatar, Grid, Paper, Button, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Stats } from "../../components/Stats/Stats";
@@ -10,7 +10,12 @@ import {
   fetechDetailCoin,
 } from "../../features/token/tokenAction";
 import { ReadMoreText } from "../../components/ReadMoreText/ReadMoreText";
+import { ChartType } from "../../types/enum";
 export const Detail: React.FC = () => {
+  const [currentChart, setCurrentChart] = useState<ChartType>(
+    ChartType.OHLC_CHART
+  );
+  const [daysOHLCChart, setDaysOHLCChart] = useState<number>(365);
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const coin = useSelector((state: RootState) => state.tokens.coin);
@@ -18,8 +23,58 @@ export const Detail: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetechDetailCoin({ tokenId: id }));
-    dispatch(fetchOHLCCoin({ tokenId: id, days: 365 }));
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
+  }, [daysOHLCChart]);
+
+  const renderChart = () => {
+    switch (currentChart) {
+      case ChartType.OHLC_CHART:
+        return (
+          <Grid container spacing={2} alignItems="center">
+            <Grid>
+              <OHLCChart width={600} height={400} data={ohlc} />
+            </Grid>
+            <Grid>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(7)}
+              >
+                7 days
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(14)}
+              >
+                14 days
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(30)}
+              >
+                30 days
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ margin: 10 }}
+                onClick={() => setDaysOHLCChart(365)}
+              >
+                1 year
+              </Button>
+            </Grid>
+          </Grid>
+        );
+      case ChartType.PRICE_CHART:
+        return <p>Hello</p>;
+      default:
+        break;
+    }
+  };
 
   if (coin) {
     return (
@@ -34,27 +89,26 @@ export const Detail: React.FC = () => {
             </Grid>
           </Grid>
         </Paper>
-
         <Paper elevation={3} style={{ padding: 20, margin: 10 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                24 hours
+            <Grid margin={2} item xs={12}>
+              <Button
+                variant="outlined"
+                style={{ margin: 2 }}
+                onClick={() => setCurrentChart(ChartType.OHLC_CHART)}
+              >
+                OHLC Chart
               </Button>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                7 days
+              <Button
+                variant="outlined"
+                style={{ margin: 2 }}
+                onClick={() => setCurrentChart(ChartType.PRICE_CHART)}
+              >
+                Price Chart
               </Button>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                14 days
-              </Button>
-              <Button variant="outlined" style={{ margin: 10 }}>
-                30 days
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <OHLCChart width={1000} height={400} data={ohlc} />
             </Grid>
           </Grid>
+          {renderChart()}
         </Paper>
       </div>
     );

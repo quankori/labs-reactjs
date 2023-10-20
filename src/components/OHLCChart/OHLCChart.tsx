@@ -52,6 +52,10 @@ export const OHLCChart: React.FC<Props> = ({ width, height, data }) => {
       chart = createChart(chartContainerRef.current, {
         width,
         height,
+        timeScale: {
+          timeVisible: true,
+          secondsVisible: false,
+        },
       });
       const candlestickSeries = chart.addCandlestickSeries();
       const processed = processData(data);
