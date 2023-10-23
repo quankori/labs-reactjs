@@ -66,6 +66,12 @@ Use the following command to start the application in development mode:
 yarn test
 ```
 
+Use docker
+
+```bash
+docker build -t test_fe .
+```
+
 ## Author
 Author Name: Quan Nguyen
 Email: minhquan.k0r1@gmail.com
