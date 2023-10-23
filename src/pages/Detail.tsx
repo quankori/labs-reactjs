@@ -1,4 +1,11 @@
-import { Avatar, Grid, Paper, Button, Typography } from "@mui/material";
+import {
+  Avatar,
+  Grid,
+  Paper,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DateFnsUtils from "@date-io/date-fns";
@@ -18,6 +25,7 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { isAfter, isBefore } from "date-fns";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import { LineChart } from "../components/Chart/LineChart";
+import { CircleLoading } from "../components/Loading/Loading";
 
 export const Detail: React.FC = () => {
   const [currentChart, setCurrentChart] = useState<ChartTypeEnums>(
@@ -31,22 +39,22 @@ export const Detail: React.FC = () => {
   const [daysOHLCChart, setDaysOHLCChart] = useState<number>(365);
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const coin = useSelector((state: RootState) => state.tokens.coin);
-  const ohlc = useSelector((state: RootState) => state.tokens.ohlc);
-  const price = useSelector((state: RootState) => state.tokens.price);
+  const { coin, ohlc, price, loading, error } = useSelector(
+    (state: RootState) => state.tokens
+  );
   const [fromDate, setFromDate] = useState(lastMonth.getTime());
   const [toDate, setToDate] = useState(today.getTime());
 
   useEffect(() => {
-    dispatch(fetechDetailCoin({ tokenId: id }));
+    id && dispatch(fetechDetailCoin({ tokenId: id }));
   }, []);
 
   useEffect(() => {
-    dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
+    id && dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
   }, [daysOHLCChart]);
 
   useEffect(() => {
-    dispatch(fetchPriceCoin({ tokenId: id, fromDate, toDate }));
+    id && dispatch(fetchPriceCoin({ tokenId: id, fromDate, toDate }));
   }, [fromDate, toDate]);
 
   const handleFromShouldDisableDate = (date: MaterialUiPickersDate) => {
@@ -143,21 +151,21 @@ export const Detail: React.FC = () => {
     }
   };
 
-  if (coin) {
+  if (!loading) {
     return (
       <>
         <Paper elevation={3} style={{ padding: 20 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12}>
-              <Avatar src={coin.image.thumb} alt={coin.name} />
-              <Typography variant="h5">{coin.name}</Typography>
-              <ReadMoreText text={coin.description.en} />
-              <Stats market_data={coin.market_data} />
+              <Avatar src={coin?.image.thumb} alt={coin?.name} />
+              <Typography variant="h5">{coin?.name}</Typography>
+              <ReadMoreText text={coin?.description.en} />
+              <Stats market_data={coin?.market_data} />
             </Grid>
           </Grid>
         </Paper>
         <Paper elevation={3} style={{ padding: 20, margin: 10 }}>
-          {renderChart()}
+          {coin && renderChart()}
           <Grid container spacing={2} alignItems="center">
             <Grid margin={2} item xs={12}>
               <Button
@@ -179,5 +187,7 @@ export const Detail: React.FC = () => {
         </Paper>
       </>
     );
+  } else {
+    return <CircleLoading />;
   }
 };

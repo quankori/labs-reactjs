@@ -10,6 +10,8 @@ import {
   fetechSearchCoin,
 } from "./tokenAction";
 
+import { toast } from "react-toastify";
+
 const initialState: CoinListState = {
   data: [],
   trending: [],
@@ -32,6 +34,7 @@ const handlePending = (state: CoinListState) => {
 const handleRejected = (state: CoinListState, action: RejectedAction) => {
   state.loading = false;
   if (action.error) {
+    toast.error(action.error.message || "Error fetching data.");
     state.error = action.error.message || "Error fetching data.";
   } else if (action.payload) {
     state.error = action.payload as string;
