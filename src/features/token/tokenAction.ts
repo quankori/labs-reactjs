@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import axios from "axios";
 import config from "../../config/settings";
 import { RootState } from "../../stores/stores";
@@ -6,12 +6,16 @@ import { RootState } from "../../stores/stores";
 export const fetchCoins = createAsyncThunk(
   "coins/fetchCoins",
   async (_, { getState }) => {
-    const { perPage, page } = (getState() as RootState).tokens;
-    const response = await axios.get(
-      config.baseApiUrl +
-        `v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d&locale=en`
-    );
-    return response.data;
+    try {
+      const { perPage, page } = (getState() as RootState).tokens;
+      const response = await axios.get(
+        config.baseApiUrl +
+          `v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d&locale=en`
+      );
+      return response.data;
+    } catch (error) {
+      return isRejectedWithValue(error);
+    }
   }
 );
 
@@ -38,11 +42,18 @@ export const fetechDetailCoin = createAsyncThunk(
   "coins/fetchDetail",
   async ({ tokenId }: { tokenId: string | undefined }) => {
     if (tokenId) {
-      const response = await axios.get(
-        config.baseApiUrl +
-          `v3/coins/${tokenId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
-      );
-      return response.data;
+      try {
+        const response = await axios.get(
+          config.baseApiUrl +
+            `v3/coins/${tokenId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
+        );
+        return response.data;
+      } catch (error: any) {
+        if (error?.response?.status === 404) {
+          location.href = "gg";
+        }
+        return isRejectedWithValue(error);
+      }
     }
   }
 );
@@ -71,16 +82,18 @@ export const fetchPriceCoin = createAsyncThunk(
   async ({
     tokenId,
     fromDate,
-    toDate
+    toDate,
   }: {
     tokenId: string | undefined;
     fromDate: number;
-    toDate: number
+    toDate: number;
   }) => {
     if (tokenId) {
       const response = await axios.get(
         config.baseApiUrl +
-          `v3/coins/${tokenId}/market_chart/range?vs_currency=usd&from=${Math.floor(fromDate / 1000)}&to=${Math.floor(toDate / 1000)}`
+          `v3/coins/${tokenId}/market_chart/range?vs_currency=usd&from=${Math.floor(
+            fromDate / 1000
+          )}&to=${Math.floor(toDate / 1000)}`
       );
       return response.data.prices;
     }

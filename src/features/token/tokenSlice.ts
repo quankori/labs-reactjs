@@ -32,6 +32,7 @@ const handlePending = (state: CoinListState) => {
 const handleRejected = (state: CoinListState, action: RejectedAction) => {
   state.loading = false;
   if (action.error) {
+    console.log(action.error.message);
     state.error = action.error.message || "Error fetching data.";
   } else if (action.payload) {
     state.error = action.payload as string;

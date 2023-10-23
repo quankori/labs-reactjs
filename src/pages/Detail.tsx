@@ -1,4 +1,11 @@
-import { Avatar, Grid, Paper, Button, Typography } from "@mui/material";
+import {
+  Avatar,
+  Grid,
+  Paper,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DateFnsUtils from "@date-io/date-fns";
@@ -31,9 +38,9 @@ export const Detail: React.FC = () => {
   const [daysOHLCChart, setDaysOHLCChart] = useState<number>(365);
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const coin = useSelector((state: RootState) => state.tokens.coin);
-  const ohlc = useSelector((state: RootState) => state.tokens.ohlc);
-  const price = useSelector((state: RootState) => state.tokens.price);
+  const { coin, ohlc, price, loading, error } = useSelector(
+    (state: RootState) => state.tokens
+  );
   const [fromDate, setFromDate] = useState(lastMonth.getTime());
   const [toDate, setToDate] = useState(today.getTime());
 
@@ -66,6 +73,15 @@ export const Detail: React.FC = () => {
     }
     return false;
   };
+
+  if (error) {
+    console.log(error);
+    return (
+      <>
+        {error}
+      </>
+    );
+  }
 
   const renderChart = () => {
     switch (currentChart) {
@@ -143,7 +159,7 @@ export const Detail: React.FC = () => {
     }
   };
 
-  if (coin) {
+  if (coin && !loading) {
     return (
       <>
         <Paper elevation={3} style={{ padding: 20 }}>
@@ -179,5 +195,7 @@ export const Detail: React.FC = () => {
         </Paper>
       </>
     );
+  } else {
+    return <CircularProgress />;
   }
 };
