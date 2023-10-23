@@ -19,7 +19,7 @@ export const Home: React.FC = () => {
   }, [dispatch, perPage, page]);
 
   const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
+    _event: React.ChangeEvent<unknown>,
     newPage: number
   ) => {
     dispatch(setPage(newPage));
@@ -30,7 +30,7 @@ export const Home: React.FC = () => {
       {!loading ? (
         <>
           <Grid container spacing={2}>
-            {[{}, {}, {}, {}].map((data, index: number) => {
+            {[{}, {}, {}, {}].map((_data, index: number) => {
               return (
                 <Grid key={index} item xs={3}>
                   <Cards />

@@ -1,11 +1,4 @@
-import {
-  Avatar,
-  Grid,
-  Paper,
-  Button,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { Avatar, Grid, Paper, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DateFnsUtils from "@date-io/date-fns";
@@ -39,7 +32,7 @@ export const Detail: React.FC = () => {
   const [daysOHLCChart, setDaysOHLCChart] = useState<number>(365);
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const { coin, ohlc, price, loading, error } = useSelector(
+  const { coin, ohlc, price, loading } = useSelector(
     (state: RootState) => state.tokens
   );
   const [fromDate, setFromDate] = useState(lastMonth.getTime());
