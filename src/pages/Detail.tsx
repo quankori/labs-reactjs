@@ -25,6 +25,7 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { isAfter, isBefore } from "date-fns";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import { LineChart } from "../components/Chart/LineChart";
+import { CircleLoading } from "../components/Loading/Loading";
 
 export const Detail: React.FC = () => {
   const [currentChart, setCurrentChart] = useState<ChartTypeEnums>(
@@ -45,15 +46,15 @@ export const Detail: React.FC = () => {
   const [toDate, setToDate] = useState(today.getTime());
 
   useEffect(() => {
-    dispatch(fetechDetailCoin({ tokenId: id }));
+    id && dispatch(fetechDetailCoin({ tokenId: id }));
   }, []);
 
   useEffect(() => {
-    dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
+    id && dispatch(fetchOHLCCoin({ tokenId: id, days: daysOHLCChart }));
   }, [daysOHLCChart]);
 
   useEffect(() => {
-    dispatch(fetchPriceCoin({ tokenId: id, fromDate, toDate }));
+    id && dispatch(fetchPriceCoin({ tokenId: id, fromDate, toDate }));
   }, [fromDate, toDate]);
 
   const handleFromShouldDisableDate = (date: MaterialUiPickersDate) => {
@@ -73,15 +74,6 @@ export const Detail: React.FC = () => {
     }
     return false;
   };
-
-  if (error) {
-    console.log(error);
-    return (
-      <>
-        {error}
-      </>
-    );
-  }
 
   const renderChart = () => {
     switch (currentChart) {
@@ -159,21 +151,21 @@ export const Detail: React.FC = () => {
     }
   };
 
-  if (coin && !loading) {
+  if (!loading) {
     return (
       <>
         <Paper elevation={3} style={{ padding: 20 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12}>
-              <Avatar src={coin.image.thumb} alt={coin.name} />
-              <Typography variant="h5">{coin.name}</Typography>
-              <ReadMoreText text={coin.description.en} />
-              <Stats market_data={coin.market_data} />
+              <Avatar src={coin?.image.thumb} alt={coin?.name} />
+              <Typography variant="h5">{coin?.name}</Typography>
+              <ReadMoreText text={coin?.description.en} />
+              <Stats market_data={coin?.market_data} />
             </Grid>
           </Grid>
         </Paper>
         <Paper elevation={3} style={{ padding: 20, margin: 10 }}>
-          {renderChart()}
+          {coin && renderChart()}
           <Grid container spacing={2} alignItems="center">
             <Grid margin={2} item xs={12}>
               <Button
@@ -196,6 +188,6 @@ export const Detail: React.FC = () => {
       </>
     );
   } else {
-    return <CircularProgress />;
+    return <CircleLoading />;
   }
 };

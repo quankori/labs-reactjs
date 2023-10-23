@@ -1,3 +1,3 @@
 export default {
-  baseApiUrl: "https://api.coingecko.com/api/",
+  baseApiUrlVersion3: "https://api.coingecko.com/api/v3",
 };

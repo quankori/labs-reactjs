@@ -75,7 +75,7 @@ export const Header: React.FC = () => {
               )}
               renderOption={(props, option) => (
                 <a
-                  href={`/${option.id}`}
+                  href={`/tokens/${option.id}`}
                   style={{ color: "inherit" }}
                   key={option.id}
                 >

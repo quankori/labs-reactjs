@@ -3,13 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../stores/stores";
 import { setPage } from "../features/token/tokenSlice";
 import { TableSimple } from "../components";
-import { CircularProgress, Grid, Pagination } from "@mui/material";
+import { Grid, Pagination } from "@mui/material";
 import { fetchCoins } from "../features/token/tokenAction";
 import { Cards } from "../components/Cards/Cards";
+import { CircleLoading } from "../components/Loading/Loading";
 
 export const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {perPage, page, loading, data} = useSelector((state: RootState) => state.tokens);
+  const { perPage, page, loading, data } = useSelector(
+    (state: RootState) => state.tokens
+  );
 
   useEffect(() => {
     dispatch(fetchCoins());
@@ -47,7 +50,7 @@ export const Home: React.FC = () => {
           />
         </>
       ) : (
-        <CircularProgress />
+        <CircleLoading />
       )}
     </>
   );

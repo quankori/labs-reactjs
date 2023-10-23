@@ -6,16 +6,19 @@ import { NotFound } from "./pages/NotFound";
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/tokens",
     children: [
-      { path: "", element: <Home /> },
       {
-        path: "/:id",
+        path: ":id",
         element: <Detail />,
       },
     ],
   },
   {
-    path: "404",
+    path: "*",
     element: <NotFound />,
   },
 ]);
